@@ -6,13 +6,13 @@ goog.require('goog.array');
 /**
  * @constructor
  * @export
- * @param {Array.<number>} value
+ * @param {Array.<number>=} opt_value
  */
-befunge.Coord = function(value) {
-  if (typeof value == 'undefined') {
-    this.value_ = [];
+befunge.Coord = function(opt_value) {
+  if (opt_value) {
+    this.setArray(opt_value);
   } else {
-    this.setArray(value);
+    this.value_ = [];
   }
 };
 
@@ -44,7 +44,7 @@ befunge.Coord.prototype.length = function() {
 
 
 /**
- * @param {!Array.<number>}
+ * @param {!Array.<number>} newValue
  */
 befunge.Coord.prototype.setArray = function(newValue) {
   this.value_ = goog.array.clone(newValue);
@@ -79,7 +79,7 @@ befunge.Coord.prototype.set = function(axis, value) {
 
 
 /**
- * @param {!befunge.Coord}
+ * @param {!befunge.Coord} delta
  */
 befunge.Coord.prototype.increment = function(delta) {
   var deltaValue = delta.asNormalisedArray();
@@ -104,7 +104,7 @@ befunge.Coord.prototype.clone = function() {
 
 /**
  * @param {!befunge.Coord} other
- * @return {bool}
+ * @return {boolean}
  */
 befunge.Coord.prototype.isEqual = function(other) {
   return goog.array.equals(this.value_, other.value_);

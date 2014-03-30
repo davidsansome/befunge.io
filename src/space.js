@@ -56,18 +56,18 @@ befunge.Space.prototype.set = function(coord, value) {
 /**
  * @param {!befunge.Coord} startCoord
  * @param {string} string
- * @param {befunge.Coord} delta
+ * @param {befunge.Coord=} opt_delta
  */
-befunge.Space.prototype.writeString = function(startCoord, string, delta) {
+befunge.Space.prototype.writeString = function(startCoord, string, opt_delta) {
   var coord = startCoord.clone();
 
-  if (typeof delta == 'undefined') {
-    delta = new befunge.Coord([1]);
+  if (!opt_delta) {
+    opt_delta = new befunge.Coord([1]);
   }
 
   for (var i = 0; i < string.length; ++i) {
     this.set(coord, string.charCodeAt(i));
-    coord.increment(delta);
+    coord.increment(opt_delta);
   }
 };
 

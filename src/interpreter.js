@@ -2,6 +2,7 @@ goog.provide('befunge.Interpreter');
 
 goog.require('befunge.Coord');
 goog.require('befunge.Space');
+goog.require('befunge.UIHandler');
 
 
 /**
@@ -30,12 +31,12 @@ befunge.ThreadContext.prototype.push = function(value) {
 
 /**
  * @constructor
+ * @param {!befunge.UIHandler} uiHandler
  */
-befunge.Interpreter = function() {
+befunge.Interpreter = function(uiHandler) {
   this.space = new befunge.Space();
   this.threads = [new befunge.ThreadContext()];
-
-  this.space.writeString(new befunge.Coord(), '22+.@');
+  this.uiHandler = uiHandler;
 };
 
 
@@ -54,7 +55,6 @@ befunge.Interpreter.prototype.run = function() {
 
 /**
  * @param {number} threadIndex
- * @extern
  */
 befunge.Interpreter.prototype.stepThread = function(threadIndex) {
   var thread = this.threads[threadIndex];
@@ -76,7 +76,7 @@ befunge.Interpreter.prototype.stepThread = function(threadIndex) {
 befunge.Interpreter.prototype.exec = function(thread, instruction) {
   var c = function(str) { return str.charCodeAt(0); }
 
-  if (thread.stringMode) {
+  if (thread.stringMode && instruction != c('"')) {
     thread.push(instruction);
     return true;
   }
@@ -145,7 +145,7 @@ befunge.Interpreter.prototype.exec = function(thread, instruction) {
       }
       break;
     case c('"'):
-      thread.stringMode = true;
+      thread.stringMode = !thread.stringMode;
       break;
     case c(':'):
       var v = thread.pop();
@@ -162,10 +162,10 @@ befunge.Interpreter.prototype.exec = function(thread, instruction) {
       thread.pop();
       break;
     case c('.'):
-      console.log(thread.pop());
+      this.uiHandler.outputNumber(thread.pop());
       break;
     case c(','):
-      console.log(String.fromCharCode(thread.pop()));
+      this.uiHandler.outputChar(String.fromCharCode(thread.pop()));
       break;
     case c('#'):
       this.advanceSkippingWhitespace(thread);
@@ -182,22 +182,10 @@ befunge.Interpreter.prototype.exec = function(thread, instruction) {
       thread.push(this.space.get(new befunge.Coord([x, y])));
       break;
     case c('&'):
-      while (true) {
-        var v = parseInt(window.prompt('Enter a number', ''));
-        if (!isNaN(v)) {
-          thread.push(v);
-          break;
-        }
-      }
+      thread.push(this.uiHandler.getNumber());
       break;
     case c('~'):
-      while (true) {
-        var v = parseInt(window.prompt('Enter a character', ''));
-        if (v.length != 0) {
-          thread.push(v.charCodeAt(0));
-          break;
-        }
-      }
+      thread.push(this.uiHandler.getChar().charCodeAt(0));
       break;
     case c('@'):
       return false;
