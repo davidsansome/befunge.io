@@ -1,6 +1,7 @@
 goog.provide('befunge.ThreadContext');
 
 goog.require('befunge.Coord');
+goog.require('goog.array');
 
 
 /**
@@ -25,4 +26,21 @@ befunge.ThreadContext.prototype.pop = function() {
 
 befunge.ThreadContext.prototype.push = function(value) {
   return this.stackStack[0].push(value);
+};
+
+
+/**
+ * @param {number} newId
+ * @return {!befunge.ThreadContext}
+ */
+befunge.ThreadContext.prototype.clone = function(newId) {
+  var ret = new befunge.ThreadContext(newId);
+  ret.position = this.position.clone();
+  ret.direction = this.direction.clone();
+  ret.stringMode = this.stringMode;
+
+  for (var i = 0; i < this.stackStack.length; ++i) {
+    ret.stackStack.push(goog.array.clone(this.stackStack[i]));
+  }
+  return ret;
 };

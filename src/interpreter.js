@@ -46,12 +46,11 @@ befunge.Interpreter.prototype.step = function() {
     this.reset();
   }
 
-  for (var i = 0; i < this.threads.length; ++i) {
+  for (var i = this.threads.length - 1; i >= 0; --i) {
     if (!this.stepThread(i)) {
       this.dispatchEvent(new befunge.ThreadEvent(
           befunge.EventType.THREAD_FINISHED, this.threads[i]));
       this.threads.splice(i, 1);
-      i --;
     }
   }
 };
@@ -193,6 +192,17 @@ befunge.Interpreter.prototype.exec = function(thread, instruction) {
       break;
     case c('@'):
       return false;
+    case c('r'):
+      thread.direction.multiplyScalar(-1);
+      break;
+    case c('t'):
+      var newThread = thread.clone(this.threads.length);
+      newThread.direction.multiplyScalar(-1);
+      newThread.position.increment(newThread.direction);
+      this.threads.push(newThread);
+      this.dispatchEvent(new befunge.ThreadEvent(
+          befunge.EventType.THREAD_STARTED, newThread));
+      break;
   }
 
   return true;

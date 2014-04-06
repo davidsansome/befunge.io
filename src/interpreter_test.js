@@ -315,3 +315,21 @@ function testInputChar() {
 
   assertEquals('a', uiHandler.output);
 }
+
+
+function testReverse() {
+  interpreter.space.writeLine(new befunge.Coord([0, 0]), '#vr3.@');
+  interpreter.space.writeLine(new befunge.Coord([0, 1]), ' >2.@');
+
+  interpreter.run();
+
+  assertEquals('2', uiHandler.output);
+}
+
+
+function testSplit() {
+  interpreter.space.writeLine(new befunge.Coord([-3, 0]), '@.1t2.@');
+  interpreter.run();
+
+  assertEquals('12', uiHandler.output);
+}
