@@ -42,7 +42,7 @@ befunge.Renderer = function(containerId, interpreter) {
   // Cursor blinking.
   this.cursorBlink = false;
   this.cursorBlinkTimer = new goog.Timer(500);
-  this.cursorBlinkTimer.addEventListener(goog.Timer.TICK, function(e) {
+  goog.events.listen(this.cursorBlinkTimer, goog.Timer.TICK, function(e) {
     that.cursorBlink = !that.cursorBlink;
     that.render();
   });
@@ -53,15 +53,28 @@ befunge.Renderer = function(containerId, interpreter) {
   goog.events.listen(
       keyHandler,
       goog.events.KeyHandler.EventType.KEY,
-      goog.bind(this.handleKeyEvent, this));
+      this.handleKeyEvent_,
+      false,
+      this);
 
   this.render();
 };
 
 
+/**
+ * The font size to use, in pixels.
+ * @const
+ * @type {number}
+ */
 befunge.Renderer.FONT_SIZE = 14;
 
 
+/**
+ * How much to offset the character inside the box.
+ * A hack because we don't have access to font metrics in JS.
+ * @const
+ * @type {!Object.<string, number>}
+ */
 befunge.Renderer.FONT_OFFSET = {
     'x': 2 / befunge.Renderer.FONT_SIZE,
     'y': -1 / befunge.Renderer.FONT_SIZE
@@ -108,7 +121,7 @@ befunge.Renderer.prototype.render = function() {
         continue;
       }
 
-      this.renderChar(v, x, y);
+      this.renderChar_(v, x, y);
     }
   }
 
@@ -119,7 +132,7 @@ befunge.Renderer.prototype.render = function() {
 
     // Redraw the character.
     this.ctx.fillStyle = '#000';
-    this.renderChar(
+    this.renderChar_(
         plane[charsInView['y']][charsInView['x']],
         charsInView['x'],
         charsInView['y']);
@@ -129,7 +142,7 @@ befunge.Renderer.prototype.render = function() {
 };
 
 
-befunge.Renderer.prototype.renderChar = function(value, x, y) {
+befunge.Renderer.prototype.renderChar_ = function(value, x, y) {
   this.ctx.fillText(
       String.fromCharCode(value),
       x + befunge.Renderer.FONT_OFFSET['x'],
@@ -137,7 +150,7 @@ befunge.Renderer.prototype.renderChar = function(value, x, y) {
 };
 
 
-befunge.Renderer.prototype.handleKeyEvent = function(e) {
+befunge.Renderer.prototype.handleKeyEvent_ = function(e) {
   switch (e.keyCode) {
     case 37:  // Left
       this.moveCursor(-1, 0);
@@ -158,10 +171,15 @@ befunge.Renderer.prototype.handleKeyEvent = function(e) {
 };
 
 
-befunge.Renderer.prototype.moveCursor = function(x, y) {
+/**
+ * Moves the cursor by the given number of characters.
+ * @param {number} deltaX
+ * @param {number} deltaY
+ */
+befunge.Renderer.prototype.moveCursor = function(deltaX, deltaY) {
   this.cursorBlink = true;
   this.cursorBlinkTimer.stop();
   this.cursorBlinkTimer.start();
-  this.cursor.increment(new befunge.Coord([x, y]));
+  this.cursor.increment(new befunge.Coord([deltaX, deltaY]));
   this.render();
 };
