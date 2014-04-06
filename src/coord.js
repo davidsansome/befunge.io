@@ -75,6 +75,7 @@ befunge.Coord.prototype.set = function(axis, value) {
   }
 
   this.value_[axis] = value;
+  this.normalise_();
 };
 
 

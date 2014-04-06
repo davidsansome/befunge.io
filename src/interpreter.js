@@ -1,53 +1,57 @@
 goog.provide('befunge.Interpreter');
 
 goog.require('befunge.Coord');
+goog.require('befunge.EventType');
 goog.require('befunge.Space');
+goog.require('befunge.ThreadEvent');
 goog.require('befunge.UIHandler');
+goog.require('goog.events.EventTarget');
 
 
 /**
  * @constructor
- */
-befunge.ThreadContext = function() {
-  this.position = new befunge.Coord();
-  this.direction = new befunge.Coord([1]);
-  this.stackStack = [[]];
-  this.stringMode = false;
-};
-
-
-befunge.ThreadContext.prototype.pop = function() {
-  if (this.stackStack[0].length == 0) {
-    return 0;
-  }
-  return this.stackStack[0].pop();
-};
-
-
-befunge.ThreadContext.prototype.push = function(value) {
-  return this.stackStack[0].push(value);
-};
-
-
-/**
- * @constructor
+ * @extends {goog.events.EventTarget}
  * @param {!befunge.UIHandler} uiHandler
  */
 befunge.Interpreter = function(uiHandler) {
+  goog.events.EventTarget.call(this);
+
   this.space = new befunge.Space();
-  this.threads = [new befunge.ThreadContext()];
+  this.threads = [];
   this.uiHandler = uiHandler;
+
+  this.reset();
+};
+goog.inherits(befunge.Interpreter, goog.events.EventTarget);
+
+
+befunge.Interpreter.prototype.reset = function() {
+  for (var i = 0; i < this.threads.length; ++i) {
+    this.dispatchEvent(new befunge.ThreadEvent(
+        befunge.EventType.THREAD_FINISHED, this.threads[i]));
+  }
+  this.threads = [new befunge.ThreadContext(0)];
 };
 
 
 befunge.Interpreter.prototype.run = function() {
   while (this.threads.length != 0) {
-    for (var i = 0; i < this.threads.length; ++i) {
-      if (!this.stepThread(i)) {
-        console.log('Thread ' + i + ' finished');
-        this.threads.splice(i, 1);
-        i --;
-      }
+    this.step();
+  }
+};
+
+
+befunge.Interpreter.prototype.step = function() {
+  if (this.threads.length == 0) {
+    this.reset();
+  }
+
+  for (var i = 0; i < this.threads.length; ++i) {
+    if (!this.stepThread(i)) {
+      this.dispatchEvent(new befunge.ThreadEvent(
+          befunge.EventType.THREAD_FINISHED, this.threads[i]));
+      this.threads.splice(i, 1);
+      i --;
     }
   }
 };
@@ -209,14 +213,17 @@ befunge.Interpreter.prototype.advanceSkippingWhitespace = function(thread) {
     this.space.maybeWrapCoord(thread.position, thread.direction);
 
     // Is there a value here?
-    if (this.space.get(thread.position) != befunge.Space.EMPTY_VALUE) {
+    if (thread.stringMode ||
+        this.space.get(thread.position) != befunge.Space.EMPTY_VALUE) {
       break;
     }
-    
+
     // Did we come back to where we started?
     if (thread.position.isEqual(startingPosition)) {
       break;
     }
   }
-};
 
+  this.dispatchEvent(new befunge.ThreadEvent(
+      befunge.EventType.THREAD_POSITION_CHANGED, thread));
+};

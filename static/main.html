@@ -1,14 +1,33 @@
 <!DOCTYPE html>
 <link rel="stylesheet" href="main.css">
 <link href='http://fonts.googleapis.com/css?family=Inconsolata:700' rel='stylesheet'>
-<script src="../closure-library/closure/goog/base.js"></script>
-<script src="../bin/befunge-deps.js"></script>
-<script src="../src/interpreter.js"></script>
-<script src="../src/renderer.js"></script>
+<script>
+  CLOSURE_NO_DEPS = 1;
+</script>
+<script src="../bin/befunge-debug.js"></script>
 
 <canvas id="view" width="600" height="200"></canvas>
+<button id="run">Run</button>
+<button id="step">Step</button>
+<div id="console"></div>
 
 <script>
-  var i = new befunge.Interpreter(new befunge.DebugUIHandler);
+  var i = new befunge.Interpreter(new befunge.HTMLUIHandler("console"));
   var r = new befunge.Renderer("view", i);
+
+  goog.events.listen(
+      document.getElementById("run"),
+      goog.events.EventType.CLICK,
+      function() {
+        i.reset();
+        i.run();
+        r.render();
+      });
+  goog.events.listen(
+      document.getElementById("step"),
+      goog.events.EventType.CLICK,
+      function() {
+        i.step();
+        r.render();
+      });
 </script>

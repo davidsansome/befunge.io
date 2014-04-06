@@ -36,9 +36,11 @@ endmacro()
 
 set(SOURCES
   src/coord.js
+  src/events.js
   src/interpreter.js
   src/renderer.js
   src/space.js
+  src/threadcontext.js
   src/uihandler.js
 )
 
@@ -51,4 +53,9 @@ add_custom_target(
   DEPENDS ${CMAKE_BINARY_DIR}/befunge-compiled.js
           ${CMAKE_BINARY_DIR}/befunge-debug.js
           ${CMAKE_BINARY_DIR}/befunge-deps.js
+)
+
+add_custom_target(
+  debugjs
+  DEPENDS ${CMAKE_BINARY_DIR}/befunge-debug.js
 )

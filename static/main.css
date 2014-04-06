@@ -1,3 +1,9 @@
 #view {
-  border: 1px dashed gray;
+  display: block;
+}
+
+#console {
+  border: 1px solid gray;
+  overflow-y: scroll;
+  height: 300px;
 }

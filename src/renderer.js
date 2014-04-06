@@ -1,6 +1,7 @@
 goog.provide('befunge.Renderer');
 
 goog.require('befunge.Coord');
+goog.require('goog.events.KeyCodes');
 goog.require('goog.events.KeyHandler');
 goog.require('goog.Timer');
 
@@ -20,6 +21,7 @@ befunge.Renderer = function(containerId, interpreter) {
 
   this.cursor = new befunge.Coord();
   this.textDirection = new befunge.Coord([1]);
+  this.threadCursors = {};
 
   // Scale so that each character is 1x1.
   this.ctx.scale(befunge.Renderer.FONT_SIZE, befunge.Renderer.FONT_SIZE);
@@ -45,9 +47,26 @@ befunge.Renderer = function(containerId, interpreter) {
   goog.events.listen(
       keyHandler,
       goog.events.KeyHandler.EventType.KEY,
-      this.handleKeyEvent_,
-      false,
-      this);
+      goog.bind(this.handleKeyEvent_, this));
+
+  goog.events.listen(
+      this.interpreter,
+      befunge.EventType.THREAD_STARTED,
+      function (e) {
+        that.threadCursors[e.context.id] = e.context.position;
+      });
+  goog.events.listen(
+      this.interpreter,
+      befunge.EventType.THREAD_FINISHED,
+      function (e) {
+        delete that.threadCursors[e.context.id];
+      });
+  goog.events.listen(
+      this.interpreter,
+      befunge.EventType.THREAD_POSITION_CHANGED,
+      function (e) {
+        that.threadCursors[e.context.id] = e.context.position;
+      });
 
   this.render();
 };
@@ -68,9 +87,22 @@ befunge.Renderer.FONT_SIZE = 14;
  * @type {!Object.<string, number>}
  */
 befunge.Renderer.FONT_OFFSET = {
-    'x': 3 / befunge.Renderer.FONT_SIZE,
-    'y': -2 / befunge.Renderer.FONT_SIZE
+  'x': 3 / befunge.Renderer.FONT_SIZE,
+  'y': -2 / befunge.Renderer.FONT_SIZE
 };
+
+
+/**
+ * Colors to use for thread instruction pointers.
+ * @const
+ * @type {!Array.<string>}
+ */
+befunge.Renderer.THREAD_COLORS = [
+  '#f00',
+  '#0ff',
+  '#ff0',
+  '#f0f',
+];
 
 
 befunge.Renderer.prototype.render = function() {
@@ -78,6 +110,13 @@ befunge.Renderer.prototype.render = function() {
   var charsInView = {
     'x': Math.ceil(this.width / 2),
     'y': Math.ceil(this.height / 2)
+  };
+
+  var viewBounds = {
+    'x1': this.cursor.get(0) - charsInView['x'],
+    'y1': this.cursor.get(1) - charsInView['y'],
+    'x2': this.cursor.get(0) + charsInView['x'] + 1,
+    'y2': this.cursor.get(1) + charsInView['y'] + 1,
   };
 
   // The character in the top-left of the view.  May only be partially inside
@@ -117,6 +156,24 @@ befunge.Renderer.prototype.render = function() {
     }
   }
 
+  // Draw the thread positions.
+  for (var threadId in this.threadCursors) {
+    var pos = this.threadCursors[threadId];
+    var x = pos.get(0) - viewBounds['x1'];
+    var y = pos.get(1) - viewBounds['y1'];
+    if (x >= 0 && y >= 0 &&
+        pos.get(0) <= viewBounds['x2'] &&
+        pos.get(1) <= viewBounds['y2']) {
+      this.ctx.fillStyle = befunge.Renderer.THREAD_COLORS[
+          threadId % befunge.Renderer.THREAD_COLORS.length];
+      this.ctx.fillRect(x, y, 1, 1);
+
+      // Redraw the character.
+      this.ctx.fillStyle = '#000';
+      this.renderChar_(plane[y][x], x, y);
+    }
+  }
+
   // Draw the cursor.
   if (this.cursorBlink) {
     this.ctx.fillStyle = '#0F0';
@@ -144,25 +201,25 @@ befunge.Renderer.prototype.renderChar_ = function(value, x, y) {
 
 befunge.Renderer.prototype.handleKeyEvent_ = function(e) {
   switch (e.keyCode) {
-    case 37:  // Left
+    case goog.events.KeyCodes.LEFT:
       this.moveCursor(-1, 0);
       break;
-    case 38:  // Up
+    case goog.events.KeyCodes.UP:
       this.moveCursor(0, -1);
       break;
-    case 39:  // Right
+    case goog.events.KeyCodes.RIGHT:
       this.moveCursor(1, 0);
       break;
-    case 40:  // Down
+    case goog.events.KeyCodes.DOWN:
       this.moveCursor(0, 1);
       break;
-    case 8:  // Backspace
+    case goog.events.KeyCodes.BACKSPACE:
       var inverseDirection = this.textDirection.clone();
       inverseDirection.multiplyScalar(-1);
 
       this.cursor.increment(inverseDirection);
       // falthrough
-    case 46:  // Delete
+    case goog.events.KeyCodes.DELETE:
       this.interpreter.space.set(this.cursor, befunge.Space.EMPTY_VALUE);
 
       this.resetCursorBlinkTimer();

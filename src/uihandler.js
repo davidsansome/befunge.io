@@ -45,7 +45,7 @@ befunge.UIHandler.prototype.getChar = function() {
  * @extends {befunge.UIHandler}
  */
 befunge.DebugUIHandler = function() {};
-//goog.inherits(befunge.DebugUIHandler, befunge.UIHandler);
+goog.inherits(befunge.DebugUIHandler, befunge.UIHandler);
 
 
 /**
@@ -87,4 +87,31 @@ befunge.DebugUIHandler.prototype.getChar = function() {
       return v.charCodeAt(0);
     }
   }
+};
+
+
+/**
+ * @constructor
+ * @param {string} id
+ * @extends {befunge.UIHandler}
+ */
+befunge.HTMLUIHandler = function(id) {
+  this.element = document.getElementById(id);
+};
+goog.inherits(befunge.HTMLUIHandler, befunge.UIHandler);
+
+
+/**
+ * @param {number} number
+ */
+befunge.HTMLUIHandler.prototype.outputNumber = function(number) {
+  this.element.appendChild(document.createTextNode(number));
+};
+
+
+/**
+ * @param {string} char
+ */
+befunge.HTMLUIHandler.prototype.outputChar = function(char) {
+  this.element.appendChild(document.createTextNode(char));
 };
