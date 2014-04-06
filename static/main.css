@@ -1,9 +1,59 @@
+body {
+  margin: 0;
+  font-family: "Roboto";
+  height: 100%;
+}
+
 #view {
   display: block;
 }
 
 #console {
-  border: 1px solid gray;
-  overflow-y: scroll;
-  height: 300px;
+  border-top: 1px solid #ccc;
+  overflow-y: auto;
+
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0px;
+  height: 150px;
+}
+
+#stacks {
+  border-left: 1px solid #ccc;
+  overflow-y: auto;
+
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 200px;
+  width: calc(250px - 6px * 2);
+
+  padding: 6px;
+}
+
+#controls {
+  border-left: 1px solid #ccc;
+
+  position: absolute;
+  bottom: 150px;
+  width: 250px;
+  height: 50px;
+  right: 0px;
+}
+
+#stacks .stack {
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#stacks .stack th {
+  font-weight: normal;
+  border: 1px solid #ccc;
+}
+
+#view {
+  width: calc(100% - 250px);
+  height: calc(100% - 150px);
 }

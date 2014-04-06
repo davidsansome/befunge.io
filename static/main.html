@@ -1,15 +1,27 @@
 <!DOCTYPE html>
 <link rel="stylesheet" href="main.css">
 <link href='http://fonts.googleapis.com/css?family=Inconsolata:700' rel='stylesheet'>
+<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
 <script>
   CLOSURE_NO_DEPS = 1;
 </script>
 <script src="../bin/befunge-debug.js"></script>
 
-<canvas id="view" width="600" height="200"></canvas>
-<button id="run">Run</button>
-<button id="step">Step</button>
+<canvas id="view"></canvas>
+<div id="controls">
+  <button id="run">Run</button>
+  <button id="step">Step</button>
+</div>
 <div id="console"></div>
+<div id="stacks">
+  <table class="stack">
+    <tr>
+      <th>Dec</th>
+      <th>Hex</th>
+      <th>Chr</th>
+    </tr>
+  </table>
+</div>
 
 <script>
   var i = new befunge.Interpreter(new befunge.HTMLUIHandler("console"));
@@ -30,4 +42,14 @@
         i.step();
         r.render();
       });
+
+  function resizeCanvas() {
+    var view = document.getElementById("view");
+    view.width = view.offsetWidth;
+    view.height = view.offsetHeight;
+    r.sizeChanged();
+  }
+  resizeCanvas();
+
+  goog.events.listen(window, goog.events.EventType.RESIZE, resizeCanvas);
 </script>

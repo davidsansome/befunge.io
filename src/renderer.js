@@ -13,25 +13,12 @@ goog.require('goog.Timer');
 befunge.Renderer = function(containerId, interpreter) {
   var that = this;
 
-  var container = document.getElementById(containerId);
-  this.ctx = container.getContext('2d');
+  this.container = document.getElementById(containerId);
   this.interpreter = interpreter;
-  this.interpreter.space.writeLine(new befunge.Coord([0, 0]), '1  v');
-  this.interpreter.space.writeLine(new befunge.Coord([0, 1]), '@.7_8.@');
 
   this.cursor = new befunge.Coord();
   this.textDirection = new befunge.Coord([1]);
   this.threadCursors = {};
-
-  // Scale so that each character is 1x1.
-  this.ctx.scale(befunge.Renderer.FONT_SIZE, befunge.Renderer.FONT_SIZE);
-  this.ctx.lineWidth = 1.0 / befunge.Renderer.FONT_SIZE;
-  this.ctx.font = '1px Inconsolata';
-  this.ctx.textBaseline = 'top';
-  this.ctx.strokeStyle = '#0F0';
-
-  this.width = this.ctx.canvas.width / befunge.Renderer.FONT_SIZE;
-  this.height = this.ctx.canvas.height / befunge.Renderer.FONT_SIZE;
 
   // Cursor blinking.
   this.cursorBlink = true;
@@ -67,8 +54,6 @@ befunge.Renderer = function(containerId, interpreter) {
       function (e) {
         that.threadCursors[e.context.id] = e.context.position;
       });
-
-  this.render();
 };
 
 
@@ -103,6 +88,23 @@ befunge.Renderer.THREAD_COLORS = [
   '#ff0',
   '#f0f',
 ];
+
+
+befunge.Renderer.prototype.sizeChanged = function() {
+  this.ctx = this.container.getContext('2d');
+
+  // Scale so that each character is 1x1.
+  this.ctx.scale(befunge.Renderer.FONT_SIZE, befunge.Renderer.FONT_SIZE);
+  this.ctx.lineWidth = 1.0 / befunge.Renderer.FONT_SIZE;
+  this.ctx.font = '1px Inconsolata';
+  this.ctx.textBaseline = 'top';
+  this.ctx.strokeStyle = '#0F0';
+
+  this.width = this.ctx.canvas.width / befunge.Renderer.FONT_SIZE;
+  this.height = this.ctx.canvas.height / befunge.Renderer.FONT_SIZE;
+
+  this.render();
+};
 
 
 befunge.Renderer.prototype.render = function() {
