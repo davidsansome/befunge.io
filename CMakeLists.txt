@@ -7,8 +7,7 @@ macro(add_javascript OUTPUT_MODE OUTPUT)
             ${CMAKE_SOURCE_DIR}/closure-library/closure/bin/build/closurebuilder.py
             --root ${CMAKE_SOURCE_DIR}/closure-library
             --root ${CMAKE_SOURCE_DIR}/src
-            --namespace befunge.Interpreter
-            --namespace befunge.Renderer
+            --namespace befunge.main
             --output_mode ${OUTPUT_MODE}
             --compiler_jar ${CMAKE_SOURCE_DIR}/closure-library/compiler.jar
             --compiler_flags --language_in=ECMASCRIPT5
@@ -38,6 +37,7 @@ set(SOURCES
   src/coord.js
   src/events.js
   src/interpreter.js
+  src/main.js
   src/renderer.js
   src/space.js
   src/threadcontext.js

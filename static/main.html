@@ -15,41 +15,10 @@
 <div id="console"></div>
 <div id="stacks">
   <table class="stack">
-    <tr>
+    <tr class="stack-header">
       <th>Dec</th>
       <th>Hex</th>
       <th>Chr</th>
     </tr>
   </table>
 </div>
-
-<script>
-  var i = new befunge.Interpreter(new befunge.HTMLUIHandler("console"));
-  var r = new befunge.Renderer("view", i);
-
-  goog.events.listen(
-      document.getElementById("run"),
-      goog.events.EventType.CLICK,
-      function() {
-        i.reset();
-        i.run();
-        r.render();
-      });
-  goog.events.listen(
-      document.getElementById("step"),
-      goog.events.EventType.CLICK,
-      function() {
-        i.step();
-        r.render();
-      });
-
-  function resizeCanvas() {
-    var view = document.getElementById("view");
-    view.width = view.offsetWidth;
-    view.height = view.offsetHeight;
-    r.sizeChanged();
-  }
-  resizeCanvas();
-
-  goog.events.listen(window, goog.events.EventType.RESIZE, resizeCanvas);
-</script>

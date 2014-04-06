@@ -11,7 +11,9 @@ goog.require('goog.events.Event');
 befunge.EventType = {
   THREAD_STARTED: goog.events.getUniqueId('befunge'),
   THREAD_FINISHED: goog.events.getUniqueId('befunge'),
-  THREAD_POSITION_CHANGED: goog.events.getUniqueId('befunge')
+  THREAD_POSITION_CHANGED: goog.events.getUniqueId('befunge'),
+  THREAD_STACK_PUSH: goog.events.getUniqueId('befunge'),
+  THREAD_STACK_POP: goog.events.getUniqueId('befunge')
 };
 
 

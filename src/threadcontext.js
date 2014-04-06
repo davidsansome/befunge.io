@@ -7,8 +7,9 @@ goog.require('goog.array');
 /**
  * @constructor
  */
-befunge.ThreadContext = function(id) {
+befunge.ThreadContext = function(id, interpreter) {
   this.id = id;
+  this.interpreter = interpreter;
   this.position = new befunge.Coord();
   this.direction = new befunge.Coord([1]);
   this.stackStack = [[]];
@@ -20,12 +21,20 @@ befunge.ThreadContext.prototype.pop = function() {
   if (this.stackStack[0].length == 0) {
     return 0;
   }
-  return this.stackStack[0].pop();
+  var ret = this.stackStack[0].pop();
+
+  this.interpreter.dispatchEvent(new befunge.ThreadEvent(
+      befunge.EventType.THREAD_STACK_POP, this));
+
+  return ret;
 };
 
 
 befunge.ThreadContext.prototype.push = function(value) {
-  return this.stackStack[0].push(value);
+  this.stackStack[0].push(value);
+
+  this.interpreter.dispatchEvent(new befunge.ThreadEvent(
+      befunge.EventType.THREAD_STACK_PUSH, this));
 };
 
 
@@ -34,7 +43,7 @@ befunge.ThreadContext.prototype.push = function(value) {
  * @return {!befunge.ThreadContext}
  */
 befunge.ThreadContext.prototype.clone = function(newId) {
-  var ret = new befunge.ThreadContext(newId);
+  var ret = new befunge.ThreadContext(newId, this.interpreter);
   ret.position = this.position.clone();
   ret.direction = this.direction.clone();
   ret.stringMode = this.stringMode;

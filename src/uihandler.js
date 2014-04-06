@@ -1,5 +1,6 @@
 goog.provide('befunge.UIHandler');
 goog.provide('befunge.DebugUIHandler');
+goog.provide('befunge.HTMLUIHandler');
 
 
 /**

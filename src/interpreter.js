@@ -30,7 +30,7 @@ befunge.Interpreter.prototype.reset = function() {
     this.dispatchEvent(new befunge.ThreadEvent(
         befunge.EventType.THREAD_FINISHED, this.threads[i]));
   }
-  this.threads = [new befunge.ThreadContext(0)];
+  this.threads = [new befunge.ThreadContext(0, this)];
 };
 
 
