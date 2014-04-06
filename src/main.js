@@ -8,22 +8,39 @@ goog.require('goog.dom');
 goog.require('goog.dom.classlist');
 goog.require('goog.events');
 goog.require('goog.events.EventType');
+goog.require('goog.Timer');
+
 
 goog.events.listen(window, goog.events.EventType.LOAD, function() {
   var uiHandler = new befunge.HTMLUIHandler('console');
   var interpreter = new befunge.Interpreter(uiHandler);
   var renderer = new befunge.Renderer('view', interpreter);
+  var delayElement = goog.dom.getElement('delay');
+
+  befunge.main.runTimer = new goog.Timer;
+  goog.events.listen(befunge.main.runTimer, goog.Timer.TICK, function() {
+    interpreter.step();
+    renderer.render();
+  });
 
   goog.events.listen(
-      document.getElementById('run'),
+      goog.dom.getElement('run'),
       goog.events.EventType.CLICK,
       function() {
         interpreter.reset();
-        interpreter.run();
-        renderer.render();
+        befunge.main.runTimer.setInterval(parseInt(delayElement.value, 10));
+        befunge.main.runTimer.start();
       });
+
   goog.events.listen(
-      document.getElementById('step'),
+      goog.dom.getElement('stop'),
+      goog.events.EventType.CLICK,
+      function() {
+        befunge.main.runTimer.stop();
+      });
+
+  goog.events.listen(
+      goog.dom.getElement('step'),
       goog.events.EventType.CLICK,
       function() {
         interpreter.step();
@@ -60,7 +77,7 @@ goog.events.listen(window, goog.events.EventType.LOAD, function() {
       });
 
   function resizeCanvas() {
-    var view = document.getElementById('view');
+    var view = goog.dom.getElement('view');
     view.width = view.offsetWidth;
     view.height = view.offsetHeight;
     renderer.sizeChanged();
