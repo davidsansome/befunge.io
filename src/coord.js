@@ -95,6 +95,27 @@ befunge.Coord.prototype.increment = function(delta) {
 
 
 /**
+ * @param {!befunge.Coord} other
+ */
+befunge.Coord.prototype.multiplyCoord = function(other) {
+  var length = Math.min(this.value_.length, other.value_.length);
+  for (var i = 0 ; i < length; ++i) {
+    this.value_[i] *= other.value_[i];
+  }
+};
+
+
+/**
+ * @param {number} scalar
+ */
+befunge.Coord.prototype.multiplyScalar = function(scalar) {
+  for (var i = 0 ; i < this.value_.length; ++i) {
+    this.value_[i] *= scalar;
+  }
+};
+
+
+/**
  * @return {!befunge.Coord}
  */
 befunge.Coord.prototype.clone = function() {

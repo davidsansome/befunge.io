@@ -15,24 +15,16 @@ befunge.Renderer = function(containerId, interpreter) {
   var container = document.getElementById(containerId);
   this.ctx = container.getContext('2d');
   this.interpreter = interpreter;
-  //this.interpreter.space.writeLine(new befunge.Coord([0, 0]), '1  v');
-  //this.interpreter.space.writeLine(new befunge.Coord([0, 1]), '@.7_8.@');
-
-  this.interpreter.space.writeLine(new befunge.Coord([-10, -3]), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-  this.interpreter.space.writeLine(new befunge.Coord([-10, -2]), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-  this.interpreter.space.writeLine(new befunge.Coord([-10, -1]), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-  this.interpreter.space.writeLine(new befunge.Coord([-10, 0]), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-  this.interpreter.space.writeLine(new befunge.Coord([-10, 1]), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-  this.interpreter.space.writeLine(new befunge.Coord([-10, 2]), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-  this.interpreter.space.writeLine(new befunge.Coord([-10, 3]), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-  this.interpreter.space.writeLine(new befunge.Coord([-10, 4]), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+  this.interpreter.space.writeLine(new befunge.Coord([0, 0]), '1  v');
+  this.interpreter.space.writeLine(new befunge.Coord([0, 1]), '@.7_8.@');
 
   this.cursor = new befunge.Coord();
+  this.textDirection = new befunge.Coord([1]);
 
   // Scale so that each character is 1x1.
   this.ctx.scale(befunge.Renderer.FONT_SIZE, befunge.Renderer.FONT_SIZE);
   this.ctx.lineWidth = 1.0 / befunge.Renderer.FONT_SIZE;
-  this.ctx.font = '1px monospace';
+  this.ctx.font = '1px Inconsolata';
   this.ctx.textBaseline = 'top';
   this.ctx.strokeStyle = '#0F0';
 
@@ -40,8 +32,8 @@ befunge.Renderer = function(containerId, interpreter) {
   this.height = this.ctx.canvas.height / befunge.Renderer.FONT_SIZE;
 
   // Cursor blinking.
-  this.cursorBlink = false;
-  this.cursorBlinkTimer = new goog.Timer(500);
+  this.cursorBlink = true;
+  this.cursorBlinkTimer = new goog.Timer(1000);
   goog.events.listen(this.cursorBlinkTimer, goog.Timer.TICK, function(e) {
     that.cursorBlink = !that.cursorBlink;
     that.render();
@@ -76,8 +68,8 @@ befunge.Renderer.FONT_SIZE = 14;
  * @type {!Object.<string, number>}
  */
 befunge.Renderer.FONT_OFFSET = {
-    'x': 2 / befunge.Renderer.FONT_SIZE,
-    'y': -1 / befunge.Renderer.FONT_SIZE
+    'x': 3 / befunge.Renderer.FONT_SIZE,
+    'y': -2 / befunge.Renderer.FONT_SIZE
 };
 
 
@@ -164,8 +156,42 @@ befunge.Renderer.prototype.handleKeyEvent_ = function(e) {
     case 40:  // Down
       this.moveCursor(0, 1);
       break;
+    case 8:  // Backspace
+      var inverseDirection = this.textDirection.clone();
+      inverseDirection.multiplyScalar(-1);
+
+      this.cursor.increment(inverseDirection);
+      // falthrough
+    case 46:  // Delete
+      this.interpreter.space.set(this.cursor, befunge.Space.EMPTY_VALUE);
+
+      this.resetCursorBlinkTimer();
+      this.render();
+      break;
     default:
-      return;
+      if (e.charCode != 0) {
+        switch (e.charCode) {
+          case 118:  // v
+            this.textDirection = new befunge.Coord([0, 1]);
+            break;
+          case 94:  // ^
+            this.textDirection = new befunge.Coord([0, -1]);
+            break;
+          case 60:  // <
+            this.textDirection = new befunge.Coord([-1]);
+            break;
+          case 62:  // >
+            this.textDirection = new befunge.Coord([1]);
+            break;
+        }
+
+        this.interpreter.space.set(this.cursor, e.charCode);
+        this.cursor.increment(this.textDirection);
+        this.resetCursorBlinkTimer();
+        this.render();
+        break;
+      }
+      return;  // Importantly, don't preventDefault() below.
   }
   e.preventDefault();
 };
@@ -177,9 +203,14 @@ befunge.Renderer.prototype.handleKeyEvent_ = function(e) {
  * @param {number} deltaY
  */
 befunge.Renderer.prototype.moveCursor = function(deltaX, deltaY) {
+  this.cursor.increment(new befunge.Coord([deltaX, deltaY]));
+  this.resetCursorBlinkTimer();
+  this.render();
+};
+
+
+befunge.Renderer.prototype.resetCursorBlinkTimer = function() {
   this.cursorBlink = true;
   this.cursorBlinkTimer.stop();
   this.cursorBlinkTimer.start();
-  this.cursor.increment(new befunge.Coord([deltaX, deltaY]));
-  this.render();
 };
