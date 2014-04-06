@@ -45,6 +45,7 @@ befunge.UIHandler.prototype.getChar = function() {
  * @extends {befunge.UIHandler}
  */
 befunge.DebugUIHandler = function() {};
+//goog.inherits(befunge.DebugUIHandler, befunge.UIHandler);
 
 
 /**

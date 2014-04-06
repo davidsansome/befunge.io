@@ -8,6 +8,7 @@ macro(add_javascript OUTPUT_MODE OUTPUT)
             --root ${CMAKE_SOURCE_DIR}/closure-library
             --root ${CMAKE_SOURCE_DIR}/src
             --namespace befunge.Interpreter
+            --namespace befunge.Renderer
             --output_mode ${OUTPUT_MODE}
             --compiler_jar ${CMAKE_SOURCE_DIR}/closure-library/compiler.jar
             --compiler_flags --language_in=ECMASCRIPT5
@@ -36,7 +37,9 @@ endmacro()
 set(SOURCES
   src/coord.js
   src/interpreter.js
+  src/renderer.js
   src/space.js
+  src/uihandler.js
 )
 
 add_javascript(compiled ${CMAKE_BINARY_DIR}/befunge-compiled.js ${SOURCES})

@@ -56,19 +56,74 @@ befunge.Space.prototype.set = function(coord, value) {
 /**
  * @param {!befunge.Coord} startCoord
  * @param {string} string
- * @param {befunge.Coord=} opt_delta
+ * @param {number=} opt_dim
  */
-befunge.Space.prototype.writeString = function(startCoord, string, opt_delta) {
+befunge.Space.prototype.writeLine = function(startCoord, string, opt_dim) {
   var coord = startCoord.clone();
 
-  if (!opt_delta) {
-    opt_delta = new befunge.Coord([1]);
+  if (typeof opt_dim == 'undefined') {
+    opt_dim = 0;
   }
+
+  var delta = new befunge.Coord();
+  delta.set(opt_dim, 1);
 
   for (var i = 0; i < string.length; ++i) {
     this.set(coord, string.charCodeAt(i));
-    coord.increment(opt_delta);
+    coord.increment(delta);
   }
+};
+
+
+/**
+ * @param {!befunge.Coord} startCoord
+ * @param {number} length
+ * @param {number=} opt_dim
+ */
+befunge.Space.prototype.readLine = function(startCoord, length, opt_dim) {
+  var coord = startCoord.clone();
+
+  if (typeof opt_dim == 'undefined') {
+    opt_dim = 0;
+  }
+
+  var delta = new befunge.Coord();
+  delta.set(opt_dim, 1);
+
+  var ret = [];
+
+  for (var i = 0; i < length; ++i) {
+    ret.push(this.get(coord));
+    coord.increment(delta);
+  }
+
+  return ret;
+};
+
+
+/**
+ * @param {!befunge.Coord} startCoord
+ * @param {!Array.<number>} size
+ * @param {Array.<number>=} opt_dims
+ */
+befunge.Space.prototype.readPlane = function(startCoord, size, opt_dims) {
+  var coord = startCoord.clone();
+
+  if (typeof opt_dims == 'undefined') {
+    opt_dims = [0, 1];
+  }
+
+  var delta = new befunge.Coord();
+  delta.set(opt_dims[1], 1);
+
+  var ret = [];
+
+  for (var i = 0; i < size[1]; ++i) {
+    ret.push(this.readLine(coord, size[0], opt_dims[0]));
+    coord.increment(delta);
+  }
+
+  return ret;
 };
 
 

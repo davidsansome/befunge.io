@@ -56,7 +56,7 @@ function setUp() {
 
 
 function testPopEmpty() {
-  interpreter.space.writeString(new befunge.Coord(), '1...@');
+  interpreter.space.writeLine(new befunge.Coord(), '1...@');
   interpreter.run();
 
   assertEquals('100', uiHandler.output);
@@ -64,7 +64,7 @@ function testPopEmpty() {
 
 
 function testAddition() {
-  interpreter.space.writeString(new befunge.Coord(), '35+.@');
+  interpreter.space.writeLine(new befunge.Coord(), '35+.@');
   interpreter.run();
 
   assertEquals('8', uiHandler.output);
@@ -72,7 +72,7 @@ function testAddition() {
 
 
 function testSubtraction() {
-  interpreter.space.writeString(new befunge.Coord(), '53-.@');
+  interpreter.space.writeLine(new befunge.Coord(), '53-.@');
   interpreter.run();
 
   assertEquals('2', uiHandler.output);
@@ -80,7 +80,7 @@ function testSubtraction() {
 
 
 function testSubtractionNegative() {
-  interpreter.space.writeString(new befunge.Coord(), '35-.@');
+  interpreter.space.writeLine(new befunge.Coord(), '35-.@');
   interpreter.run();
 
   assertEquals('-2', uiHandler.output);
@@ -88,7 +88,7 @@ function testSubtractionNegative() {
 
 
 function testMultiplication() {
-  interpreter.space.writeString(new befunge.Coord(), '35*.@');
+  interpreter.space.writeLine(new befunge.Coord(), '35*.@');
   interpreter.run();
 
   assertEquals('15', uiHandler.output);
@@ -96,7 +96,7 @@ function testMultiplication() {
 
 
 function testDivision() {
-  interpreter.space.writeString(new befunge.Coord(), '82/.@');
+  interpreter.space.writeLine(new befunge.Coord(), '82/.@');
   interpreter.run();
 
   assertEquals('4', uiHandler.output);
@@ -104,7 +104,7 @@ function testDivision() {
 
 
 function testDivisionFloor() {
-  interpreter.space.writeString(new befunge.Coord(), '83/.@');
+  interpreter.space.writeLine(new befunge.Coord(), '83/.@');
   interpreter.run();
 
   assertEquals('2', uiHandler.output);
@@ -112,7 +112,7 @@ function testDivisionFloor() {
 
 
 function testModulo() {
-  interpreter.space.writeString(new befunge.Coord(), '83%.@');
+  interpreter.space.writeLine(new befunge.Coord(), '83%.@');
   interpreter.run();
 
   assertEquals('2', uiHandler.output);
@@ -120,7 +120,7 @@ function testModulo() {
 
 
 function testNotTrue() {
-  interpreter.space.writeString(new befunge.Coord(), '7!.@');
+  interpreter.space.writeLine(new befunge.Coord(), '7!.@');
   interpreter.run();
 
   assertEquals('0', uiHandler.output);
@@ -128,7 +128,7 @@ function testNotTrue() {
 
 
 function testNotFalse() {
-  interpreter.space.writeString(new befunge.Coord(), '0!.@');
+  interpreter.space.writeLine(new befunge.Coord(), '0!.@');
   interpreter.run();
 
   assertEquals('1', uiHandler.output);
@@ -136,7 +136,7 @@ function testNotFalse() {
 
 
 function testNotNegative() {
-  interpreter.space.writeString(new befunge.Coord(), '07-!.@');
+  interpreter.space.writeLine(new befunge.Coord(), '07-!.@');
   interpreter.run();
 
   assertEquals('0', uiHandler.output);
@@ -144,7 +144,7 @@ function testNotNegative() {
 
 
 function testGreaterThanTrue() {
-  interpreter.space.writeString(new befunge.Coord(), '12`.@');
+  interpreter.space.writeLine(new befunge.Coord(), '12`.@');
   interpreter.run();
 
   assertEquals('0', uiHandler.output);
@@ -152,7 +152,7 @@ function testGreaterThanTrue() {
 
 
 function testGreaterThanFalse() {
-  interpreter.space.writeString(new befunge.Coord(), '21`.@');
+  interpreter.space.writeLine(new befunge.Coord(), '21`.@');
   interpreter.run();
 
   assertEquals('1', uiHandler.output);
@@ -160,7 +160,7 @@ function testGreaterThanFalse() {
 
 
 function testGreaterThanEqual() {
-  interpreter.space.writeString(new befunge.Coord(), '11`.@');
+  interpreter.space.writeLine(new befunge.Coord(), '11`.@');
   interpreter.run();
 
   assertEquals('0', uiHandler.output);
@@ -168,7 +168,7 @@ function testGreaterThanEqual() {
 
 
 function testSkip() {
-  interpreter.space.writeString(new befunge.Coord(), '12#..@');
+  interpreter.space.writeLine(new befunge.Coord(), '12#..@');
   interpreter.run();
 
   assertEquals('2', uiHandler.output);
@@ -176,7 +176,7 @@ function testSkip() {
 
 
 function testMoveRight() {
-  interpreter.space.writeString(new befunge.Coord(), '1>2..@');
+  interpreter.space.writeLine(new befunge.Coord(), '1>2..@');
   interpreter.run();
 
   assertEquals('21', uiHandler.output);
@@ -184,7 +184,7 @@ function testMoveRight() {
 
 
 function testMoveLeft() {
-  interpreter.space.writeString(new befunge.Coord(), '12#@.3.<@');
+  interpreter.space.writeLine(new befunge.Coord(), '12#@.3.<@');
   interpreter.run();
 
   assertEquals('2313', uiHandler.output);
@@ -192,10 +192,10 @@ function testMoveLeft() {
 
 
 function testMoveDown() {
-  interpreter.space.writeString(new befunge.Coord([0, 0]), 'v');
-  interpreter.space.writeString(new befunge.Coord([0, 1]), '1');
-  interpreter.space.writeString(new befunge.Coord([0, 2]), '.');
-  interpreter.space.writeString(new befunge.Coord([0, 3]), '@');
+  interpreter.space.writeLine(new befunge.Coord([0, 0]), 'v');
+  interpreter.space.writeLine(new befunge.Coord([0, 1]), '1');
+  interpreter.space.writeLine(new befunge.Coord([0, 2]), '.');
+  interpreter.space.writeLine(new befunge.Coord([0, 3]), '@');
   interpreter.run();
 
   assertEquals('1', uiHandler.output);
@@ -203,10 +203,10 @@ function testMoveDown() {
 
 
 function testMoveUp() {
-  interpreter.space.writeString(new befunge.Coord([0, -3]), '@');
-  interpreter.space.writeString(new befunge.Coord([0, -2]), '.');
-  interpreter.space.writeString(new befunge.Coord([0, -1]), '1');
-  interpreter.space.writeString(new befunge.Coord([0,  0]), '^');
+  interpreter.space.writeLine(new befunge.Coord([0, -3]), '@');
+  interpreter.space.writeLine(new befunge.Coord([0, -2]), '.');
+  interpreter.space.writeLine(new befunge.Coord([0, -1]), '1');
+  interpreter.space.writeLine(new befunge.Coord([0,  0]), '^');
   interpreter.run();
 
   assertEquals('1', uiHandler.output);
@@ -214,8 +214,8 @@ function testMoveUp() {
 
 
 function testCondLeft() {
-  interpreter.space.writeString(new befunge.Coord([0, 0]), '1  v');
-  interpreter.space.writeString(new befunge.Coord([0, 1]), '@.7_8.@');
+  interpreter.space.writeLine(new befunge.Coord([0, 0]), '1  v');
+  interpreter.space.writeLine(new befunge.Coord([0, 1]), '@.7_8.@');
   interpreter.run();
 
   assertEquals('7', uiHandler.output);
@@ -223,8 +223,8 @@ function testCondLeft() {
 
 
 function testCondRight() {
-  interpreter.space.writeString(new befunge.Coord([0, 0]), '0  v');
-  interpreter.space.writeString(new befunge.Coord([0, 1]), '@.7_8.@');
+  interpreter.space.writeLine(new befunge.Coord([0, 0]), '0  v');
+  interpreter.space.writeLine(new befunge.Coord([0, 1]), '@.7_8.@');
   interpreter.run();
 
   assertEquals('8', uiHandler.output);
@@ -232,9 +232,9 @@ function testCondRight() {
 
 
 function testCondUp() {
-  interpreter.space.writeString(new befunge.Coord([0, -1]), '@.7<');
-  interpreter.space.writeString(new befunge.Coord([0,  0]), '1  |');
-  interpreter.space.writeString(new befunge.Coord([0,  1]), '@.8<');
+  interpreter.space.writeLine(new befunge.Coord([0, -1]), '@.7<');
+  interpreter.space.writeLine(new befunge.Coord([0,  0]), '1  |');
+  interpreter.space.writeLine(new befunge.Coord([0,  1]), '@.8<');
   interpreter.run();
 
   assertEquals('7', uiHandler.output);
@@ -242,9 +242,9 @@ function testCondUp() {
 
 
 function testCondDown() {
-  interpreter.space.writeString(new befunge.Coord([0, -1]), '@.7<');
-  interpreter.space.writeString(new befunge.Coord([0,  0]), '0  |');
-  interpreter.space.writeString(new befunge.Coord([0,  1]), '@.8<');
+  interpreter.space.writeLine(new befunge.Coord([0, -1]), '@.7<');
+  interpreter.space.writeLine(new befunge.Coord([0,  0]), '0  |');
+  interpreter.space.writeLine(new befunge.Coord([0,  1]), '@.8<');
   interpreter.run();
 
   assertEquals('8', uiHandler.output);
@@ -252,7 +252,7 @@ function testCondDown() {
 
 
 function testStringMode() {
-  interpreter.space.writeString(new befunge.Coord([0, 0]), '"foo",,,@');
+  interpreter.space.writeLine(new befunge.Coord([0, 0]), '"foo",,,@');
   interpreter.run();
 
   assertEquals('oof', uiHandler.output);
@@ -260,7 +260,7 @@ function testStringMode() {
 
 
 function testDuplicate() {
-  interpreter.space.writeString(new befunge.Coord([0, 0]), '1:...@');
+  interpreter.space.writeLine(new befunge.Coord([0, 0]), '1:...@');
   interpreter.run();
 
   assertEquals('110', uiHandler.output);
@@ -268,7 +268,7 @@ function testDuplicate() {
 
 
 function testSwap() {
-  interpreter.space.writeString(new befunge.Coord([0, 0]), '12\\..@');
+  interpreter.space.writeLine(new befunge.Coord([0, 0]), '12\\..@');
   interpreter.run();
 
   assertEquals('12', uiHandler.output);
@@ -276,7 +276,7 @@ function testSwap() {
 
 
 function testPop() {
-  interpreter.space.writeString(new befunge.Coord([0, 0]), '1$.@');
+  interpreter.space.writeLine(new befunge.Coord([0, 0]), '1$.@');
   interpreter.run();
 
   assertEquals('0', uiHandler.output);
@@ -284,7 +284,7 @@ function testPop() {
 
 
 function testPut() {
-  interpreter.space.writeString(new befunge.Coord([0, 0]), '"7"06p .@');
+  interpreter.space.writeLine(new befunge.Coord([0, 0]), '"7"06p .@');
   interpreter.run();
 
   assertEquals('7', uiHandler.output);
@@ -292,7 +292,7 @@ function testPut() {
 
 
 function testGet() {
-  interpreter.space.writeString(new befunge.Coord([0, 0]), '06g ,@x');
+  interpreter.space.writeLine(new befunge.Coord([0, 0]), '06g ,@x');
   interpreter.run();
 
   assertEquals('x', uiHandler.output);
@@ -301,7 +301,7 @@ function testGet() {
 
 function testInputNumber() {
   uiHandler.numbers.push(1);
-  interpreter.space.writeString(new befunge.Coord([0, 0]), '&.@');
+  interpreter.space.writeLine(new befunge.Coord([0, 0]), '&.@');
   interpreter.run();
 
   assertEquals('1', uiHandler.output);
@@ -310,7 +310,7 @@ function testInputNumber() {
 
 function testInputChar() {
   uiHandler.chars.push("a");
-  interpreter.space.writeString(new befunge.Coord([0, 0]), '~,@');
+  interpreter.space.writeLine(new befunge.Coord([0, 0]), '~,@');
   interpreter.run();
 
   assertEquals('a', uiHandler.output);
