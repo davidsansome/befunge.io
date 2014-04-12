@@ -36,12 +36,14 @@ endmacro()
 set(SOURCES
   src/coord.js
   src/events.js
+  src/font2texture.js
   src/interpreter.js
   src/main.js
   src/renderer.js
   src/space.js
   src/threadcontext.js
   src/uihandler.js
+  src/webglrenderer.js
 )
 
 add_javascript(compiled ${CMAKE_BINARY_DIR}/befunge-compiled.js ${SOURCES})
