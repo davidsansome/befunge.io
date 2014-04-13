@@ -36,14 +36,17 @@ endmacro()
 set(SOURCES
   src/coord.js
   src/events.js
-  src/font2texture.js
+  src/geometryfont.js
   src/interpreter.js
   src/main.js
   src/renderer.js
+  src/renderer2d.js
+  src/rendererwebgl.js
+  src/shader.js
   src/space.js
+  src/texturefont.js
   src/threadcontext.js
   src/uihandler.js
-  src/webglrenderer.js
 )
 
 add_javascript(compiled ${CMAKE_BINARY_DIR}/befunge-compiled.js ${SOURCES})
@@ -60,4 +63,9 @@ add_custom_target(
 add_custom_target(
   debugjs
   DEPENDS ${CMAKE_BINARY_DIR}/befunge-debug.js
+)
+
+add_custom_target(
+  deps
+  DEPENDS ${CMAKE_BINARY_DIR}/befunge-deps.js
 )

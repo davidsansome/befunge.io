@@ -1,6 +1,7 @@
 goog.provide('befunge.Space');
 
 goog.require('befunge.Coord');
+goog.require('goog.array');
 
 
 /**
@@ -8,7 +9,7 @@ goog.require('befunge.Coord');
  * @export
  */
 befunge.Space = function() {
-  this.data_ = {};
+  this.data_ = [];
   this.minCoord_ = new befunge.Coord();
   this.maxCoord_ = new befunge.Coord();
 };
@@ -17,16 +18,32 @@ befunge.Space = function() {
 befunge.Space.EMPTY_VALUE = 32;
 
 
+befunge.Space.prototype.findCoord_ = function(normalisedArray) {
+  for (var i = 0; i < this.data_.length; ++i) {
+    if (goog.array.defaultCompare(
+        this.data_[i]['coord'], normalisedArray) == 0) {
+      return i;
+    }
+  }
+  return null;
+};
+
+
 /**
  * @param {!befunge.Coord} coord
  * @return number
  */
 befunge.Space.prototype.get = function(coord) {
-  var value = this.data_[coord.asNormalisedArray()];
-  if (typeof value == 'undefined') {
+  var index = this.findCoord_(coord.asNormalisedArray());
+  if (index == null) {
     return befunge.Space.EMPTY_VALUE;
   }
-  return value;
+  return this.data_[index]['value'];
+};
+
+
+befunge.Space.prototype.getAll = function() {
+  return this.data_;
 };
 
 
@@ -36,10 +53,14 @@ befunge.Space.prototype.get = function(coord) {
  */
 befunge.Space.prototype.set = function(coord, value) {
   var normalisedArray = coord.asNormalisedArray();
-  if (value == befunge.Space.EMPTY_VALUE) {
-    delete this.data_[normalisedArray];
+  var index = this.findCoord_(normalisedArray);
+  if (index == null) {
+    this.data_.push({
+      'coord': goog.array.clone(normalisedArray),
+      'value': value
+    });
   } else {
-    this.data_[normalisedArray] = value;
+    this.data_[index]['value'] = value;
   }
 
   for (var i = 0; i < coord.length(); ++i) {

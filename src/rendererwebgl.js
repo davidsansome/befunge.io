@@ -55,6 +55,7 @@ befunge.RendererWebGL.prototype.sizeChanged = function() {
 
   // Initialise matrices.
   this.projection = makePerspective(50, widthPx / heightPx, 0.1, 100.0);
+  this.modelview = null;
 
   this.render();
 };
@@ -63,7 +64,7 @@ befunge.RendererWebGL.prototype.sizeChanged = function() {
 befunge.RendererWebGL.prototype.render = function() {
   // Look at the cursor.
   var center = this.cursor;
-  var baseModelView =
+  this.modelView =
       Matrix.Diagonal([this.scale, this.scale, this.scale, 1.0])
       .x(makeLookAt(
           // Camera.
@@ -97,80 +98,75 @@ befunge.RendererWebGL.prototype.render = function() {
   this.gl.uniformMatrix4fv(
       this.characterShader.uniform('projection_matrix'), false,
       new Float32Array(this.projection.flatten()));
-  this.gl.uniform4fv(
-      this.characterShader.uniform('color'),
-      new Float32Array([0.0, 1.0, 0.0, 1.0]));
+  this.setColor_(0, 1, 0);
 
   // Draw the characters in the funge space.
   var seenCursorCharacter = false;
   for (var i = 0; i < data.length; ++i) {
-    var coordArray = data[i]['coord'];
-    var x = coordArray[0] || 0;
-    var y = - (coordArray[1] || 0);
-    var z = coordArray[2] || 0;
-    var v = data[i]['value'];
-
-    // Translate to this character.
-    var modelView = baseModelView.dup().x(Matrix.Translation($V([x, y, z])));
-    this.gl.uniformMatrix4fv(
-        this.characterShader.uniform('modelview_matrix'), false,
-        new Float32Array(modelView.flatten()));
+    this.translateToChar_(data[i]['coord']);
 
     var thisCharIsBlinking = false;
     if (this.cursorBlink &&
-        goog.array.defaultCompare(coordArray,
+        goog.array.defaultCompare(data[i]['coord'],
                                   this.cursor.asNormalisedArray()) == 0) {
       seenCursorCharacter = true;
-
-      // Draw the cursor in green.
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.cursorBuffer);
-      this.gl.vertexAttribPointer(
-          this.characterShader.attrib('vertex_position'),
-          3, this.gl.FLOAT, false, 0, 0);
-      this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
-
-      // Draw the character in black.
-      this.gl.uniform4fv(
-          this.characterShader.uniform('color'),
-          new Float32Array([0.0, 0.0, 0.0, 1.0]));
-
-      // Set the color back to green again after.
       thisCharIsBlinking = true;
+
+      this.drawCursor_();
+      this.setColor_(0, 0, 0);
     }
 
-    // Draw the character.
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.font.vertexBuffers[v]);
-    this.gl.vertexAttribPointer(
-        this.characterShader.attrib('vertex_position'),
-        3, this.gl.FLOAT, false, 0, 0);
-    this.gl.drawArrays(this.gl.TRIANGLES, 0, this.font.triangleCounts[v]);
+    this.drawChar_(data[i]['value']);
 
     if (thisCharIsBlinking) {
-      // Set the color back to green.
-      this.gl.uniform4fv(
-          this.characterShader.uniform('color'),
-          new Float32Array([0.0, 1.0, 0.0, 1.0]));
+      this.setColor_(0, 1, 0);
     }
   }
 
   // We haven't drawn the cursor yet.
   if (this.cursorBlink && !seenCursorCharacter) {
-    var coordArray = this.cursor.asNormalisedArray();
-    var x = coordArray[0] || 0;
-    var y = - (coordArray[1] || 0);
-    var z = coordArray[2] || 0;
-
-    // Translate to this character.
-    var modelView = baseModelView.dup().x(Matrix.Translation($V([x, y, z])));
-    this.gl.uniformMatrix4fv(
-        this.characterShader.uniform('modelview_matrix'), false,
-        new Float32Array(modelView.flatten()));
-
-    // Draw the cursor.
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.cursorBuffer);
-    this.gl.vertexAttribPointer(
-        this.characterShader.attrib('vertex_position'),
-        3, this.gl.FLOAT, false, 0, 0);
-    this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+    this.translateToChar_(this.cursor.asNormalisedArray());
+    this.drawCursor_();
   }
+};
+
+
+befunge.RendererWebGL.prototype.setColor_ = function(r, g, b, opt_a) {
+  if (typeof opt_a == 'undefined') {
+    opt_a = 1.0;
+  }
+
+  this.gl.uniform4fv(
+      this.characterShader.uniform('color'),
+      new Float32Array([r, g, b, opt_a]));
+};
+
+
+befunge.RendererWebGL.prototype.drawCursor_ = function() {
+  this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.cursorBuffer);
+  this.gl.vertexAttribPointer(
+      this.characterShader.attrib('vertex_position'),
+      3, this.gl.FLOAT, false, 0, 0);
+  this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+};
+
+
+befunge.RendererWebGL.prototype.translateToChar_ = function(normalisedArray) {
+  var x = normalisedArray[0] || 0;
+  var y = - (normalisedArray[1] || 0);
+  var z = normalisedArray[2] || 0;
+
+  var modelView = this.modelView.dup().x(Matrix.Translation($V([x, y, z])));
+  this.gl.uniformMatrix4fv(
+      this.characterShader.uniform('modelview_matrix'), false,
+      new Float32Array(modelView.flatten()));
+};
+
+
+befunge.RendererWebGL.prototype.drawChar_ = function(charCode) {
+  this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.font.vertexBuffers[charCode]);
+  this.gl.vertexAttribPointer(
+      this.characterShader.attrib('vertex_position'),
+      3, this.gl.FLOAT, false, 0, 0);
+  this.gl.drawArrays(this.gl.TRIANGLES, 0, this.font.triangleCounts[charCode]);
 };

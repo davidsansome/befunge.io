@@ -3,8 +3,7 @@ goog.provide('befunge.main');
 goog.require('befunge.EventType');
 goog.require('befunge.HTMLUIHandler');
 goog.require('befunge.Interpreter');
-goog.require('befunge.Renderer');
-goog.require('befunge.WebGLRenderer');
+goog.require('befunge.RendererWebGL');
 goog.require('goog.dom');
 goog.require('goog.dom.classlist');
 goog.require('goog.events');
@@ -15,7 +14,7 @@ goog.require('goog.Timer');
 goog.events.listen(window, goog.events.EventType.LOAD, function() {
   var uiHandler = new befunge.HTMLUIHandler('console');
   var interpreter = new befunge.Interpreter(uiHandler);
-  var renderer = new befunge.WebGLRenderer('view', interpreter);
+  var renderer = new befunge.RendererWebGL('view', interpreter);
   var delayElement = goog.dom.getElement('delay');
 
   befunge.main.runTimer = new goog.Timer;

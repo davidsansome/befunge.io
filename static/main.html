@@ -1,8 +1,5 @@
 <!DOCTYPE html>
 <link rel="stylesheet" href="main.css">
-<!--<link href='http://fonts.googleapis.com/css?family=Inconsolata:700' rel='stylesheet'>
-<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
--->
 <script>
   CLOSURE_NO_DEPS = 1;
 </script>
@@ -10,31 +7,29 @@
 <script src="sylvester.js"></script>
 <script src="glUtils.js"></script>
 <script src="webgl-debug.js"></script>
+<script src="three.min.js"></script>
 <script src="../bin/befunge-debug.js"></script>
+<script src="inconsolata.js"></script>
 
-<script id="shader-frag" type="x-shader/x-fragment">
-  uniform sampler2D font_sampler;
+<script id="char-f" type="x-shader/x-fragment">
+  precision lowp float;
 
-  varying highp vec2 texcoord;
+  uniform vec4 color;
 
   void main(void) {
-    gl_FragColor = texture2D(font_sampler, texcoord);
+    gl_FragColor = color;
   }
 </script>
 
-<script id="shader-vert" type="x-shader/x-vertex">
+<script id="char-v" type="x-shader/x-vertex">
   attribute vec3 vertex_position;
-  attribute vec2 vertex_texcoord;
 
   uniform mat4 modelview_matrix;
   uniform mat4 projection_matrix;
 
-  varying highp vec2 texcoord;
-
   void main(void) {
     gl_Position =
         projection_matrix * modelview_matrix * vec4(vertex_position, 1.0);
-    texcoord = vertex_texcoord;
   }
 </script>
 

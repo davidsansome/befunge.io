@@ -57,11 +57,7 @@ befunge.Coord.prototype.setArray = function(newValue) {
  * @return number
  */
 befunge.Coord.prototype.get = function(axis) {
-  if (axis >= this.value_.length) {
-    return 0;
-  } else {
-    return this.value_[axis];
-  }
+  return this.value_[axis] || 0;
 };
 
 
