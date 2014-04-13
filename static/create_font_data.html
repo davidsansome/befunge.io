@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<style>
+  body {
+    word-wrap: break-word;
+    font-family: courier;
+  }
+</style>
+<script src="../closure-library/closure/goog/base.js"></script>
+<script src="../bin/befunge-deps.js"></script>
+<script src="three.min.js"></script>
+<script src="inconsolata_bold.typeface.js"></script>
+<script src="inconsolata_regular.typeface.js"></script>
+
+<script>
+  goog.require('befunge.GeometryFont.create');
+
+  window.onload = function() {
+    var data = befunge.GeometryFont.create('inconsolata');
+    var text = 'befunge.GeometryFont.inconsolata = ' +
+               JSON.stringify(data) + ';';
+
+    document.body.appendChild(document.createTextNode(text));
+  };
+</script>
