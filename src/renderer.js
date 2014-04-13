@@ -101,16 +101,22 @@ befunge.Renderer.prototype.render = function() {
 befunge.Renderer.prototype.handleKeyEvent_ = function(e) {
   switch (e.keyCode) {
     case goog.events.KeyCodes.LEFT:
-      this.moveCursor_(-1, 0);
+      this.moveCursor_(-1, 0, 0);
       break;
     case goog.events.KeyCodes.UP:
-      this.moveCursor_(0, -1);
+      this.moveCursor_(0, -1, 0);
       break;
     case goog.events.KeyCodes.RIGHT:
-      this.moveCursor_(1, 0);
+      this.moveCursor_(1, 0, 0);
       break;
     case goog.events.KeyCodes.DOWN:
-      this.moveCursor_(0, 1);
+      this.moveCursor_(0, 1, 0);
+      break;
+    case goog.events.KeyCodes.PAGE_UP:
+      this.moveCursor_(0, 0, 1);
+      break;
+    case goog.events.KeyCodes.PAGE_DOWN:
+      this.moveCursor_(0, 0, -1);
       break;
     case goog.events.KeyCodes.BACKSPACE:
       var inverseDirection = this.textDirection.clone();
@@ -158,8 +164,8 @@ befunge.Renderer.prototype.handleKeyEvent_ = function(e) {
  * @param {number} deltaX
  * @param {number} deltaY
  */
-befunge.Renderer.prototype.moveCursor_ = function(deltaX, deltaY) {
-  this.cursor.increment(new befunge.Coord([deltaX, deltaY]));
+befunge.Renderer.prototype.moveCursor_ = function(deltaX, deltaY, deltaZ) {
+  this.cursor.increment(new befunge.Coord([deltaX, deltaY, deltaZ]));
   this.resetCursorBlinkTimer_();
   this.render();
 };

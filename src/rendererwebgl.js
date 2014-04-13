@@ -15,6 +15,7 @@ befunge.RendererWebGL = function(canvasId, interpreter) {
       this.canvas.getContext("webgl"));
   this.font = new befunge.GeometryFont(
       befunge.GeometryFont.inconsolata, this.gl);
+  this.lastColor = [];
 
   // Initialise shaders.
   this.characterShader = new befunge.Shader('char-v', 'char-f', this.gl);
@@ -98,34 +99,42 @@ befunge.RendererWebGL.prototype.render = function() {
   this.gl.uniformMatrix4fv(
       this.characterShader.uniform('projection_matrix'), false,
       new Float32Array(this.projection.flatten()));
-  this.setColor_(0, 1, 0);
 
   // Draw the characters in the funge space.
   var seenCursorCharacter = false;
   for (var i = 0; i < data.length; ++i) {
-    this.translateToChar_(data[i]['coord']);
+    var coord = data[i]['coord'];
+    var value = data[i]['value'];
+
+    var activePlaneDistance = Math.abs((coord[2] || 0) - this.cursor.get(2));
+
+    this.translateToChar_(coord);
 
     var thisCharIsBlinking = false;
     if (this.cursorBlink &&
-        goog.array.defaultCompare(data[i]['coord'],
+        goog.array.defaultCompare(coord,
                                   this.cursor.asNormalisedArray()) == 0) {
       seenCursorCharacter = true;
       thisCharIsBlinking = true;
 
+      this.setColor_(0, 1, 0);
       this.drawCursor_();
       this.setColor_(0, 0, 0);
+    } else {
+      if (activePlaneDistance == 0) {
+        this.setColor_(0, 1, 0);
+      } else {
+        this.setColor_(1, 1, 1, Math.max(0.05, 0.3 - activePlaneDistance * 0.05));
+      }
     }
 
-    this.drawChar_(data[i]['value']);
-
-    if (thisCharIsBlinking) {
-      this.setColor_(0, 1, 0);
-    }
+    this.drawChar_(value);
   }
 
   // We haven't drawn the cursor yet.
   if (this.cursorBlink && !seenCursorCharacter) {
     this.translateToChar_(this.cursor.asNormalisedArray());
+    this.setColor_(0, 1, 0);
     this.drawCursor_();
   }
 };
@@ -136,9 +145,14 @@ befunge.RendererWebGL.prototype.setColor_ = function(r, g, b, opt_a) {
     opt_a = 1.0;
   }
 
-  this.gl.uniform4fv(
-      this.characterShader.uniform('color'),
-      new Float32Array([r, g, b, opt_a]));
+  var color = [r, g, b, opt_a];
+
+  if (goog.array.defaultCompare(this.lastColor, color) != 0) {
+    this.gl.uniform4fv(
+        this.characterShader.uniform('color'),
+        new Float32Array(color));
+    this.lastColor = color;
+  }
 };
 
 
